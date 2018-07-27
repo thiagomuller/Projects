@@ -11,8 +11,12 @@ def jogar():
             print("The secret number is an odd!!!\n")
 
     def prime_numbers(n):
-        if(n%1 == 0 and n%n == 0):
-            print("The secret number is a prime number!!!\n")
+        for prime in range (1, 101):
+            prime_counter = 0
+            if(secret_number % prime_counter == secret_number and secret_number % secret_number == 1):
+                prime_counter += 1
+        if(prime_counter == 2):
+                print("The secret number is a prime number!\n")
 
     def below_or_above_fifty(n):
         if(n > 50):
