@@ -12,11 +12,13 @@ def jogar():
 
     def prime_numbers(n):
         for prime in range (1, 101):
-            prime_counter = 0
-            if(secret_number % prime_counter == secret_number and secret_number % secret_number == 1):
+            prime_counter = 1
+            if(secret_number / prime == secret_number and secret_number / secret_number == 1):
                 prime_counter += 1
         if(prime_counter == 2):
                 print("The secret number is a prime number!\n")
+        if(prime_counter != 2):
+                print("The secret number is not a prime number!\n")
 
     def below_or_above_fifty(n):
         if(n > 50):
@@ -70,7 +72,8 @@ def jogar():
         return(list_guess)
 
     def choosing_difficulties():
-        diff = int(input("(1) Easy ,  (2) Medium , (3)Hard\n"))
+        diff = input("(1) Easy ,  (2) Medium , (3)Hard\n")
+        diff = is_difficulty_index_valid(diff)
 
         if (diff == 1):
             tries = 50
@@ -84,6 +87,45 @@ def jogar():
         tries_tips = [tries, tips]
         return tries_tips
 
+
+
+    def is_diffulty_index_a_number(diff):
+        valid = True
+        if (diff.isalpha()):
+            valid = False
+            print("I'm sorry, but that wasn't a number, could you please type again?\n")
+        if (diff.isdigit()):
+            diff = int(diff)
+            if (diff <= 0 or diff > 3):
+                valid = False
+                print("That number is out of range, could you please choose among the given options?\n")
+        return valid
+
+    def is_difficulty_index_valid(diff):
+        while(not is_diffulty_index_a_number(diff)):
+            diff = input()
+        diff = int(diff)
+        return diff
+
+    def is_guess_a_number(guess):
+        valid = True
+        if (guess.isalpha()):
+            valid = False
+            print("Your guess wasn't a number, could you please type it again?\n")
+        if (guess.isdigit()):
+            guess = int(guess)
+            if (guess <= 0 or guess > 100):
+                valid = False
+                print("That number is out of range, could you please type your guess between 1 and 100?\n")
+        return valid
+
+    def is_guess_valid(guess):
+        while(not is_guess_a_number(guess)):
+            guess = input()
+        guess = int(guess)
+        return guess
+
+
     def game_loop(secret_number):
 
         tries_tips = choosing_difficulties()
@@ -92,37 +134,43 @@ def jogar():
         score = 1000
         print("Type q to quit anytime you want\n")
         print(secret_number)
+        guess_or_tip = ""
         guess_or_tip = input("Would you like to guess or take a tip?\n").strip().lower()
         for rodada in range(1 , tries_tips[0] + 1):
             if(guess_or_tip == "q"):
                 print("You quited, thanks for playing!")
-                break
+                exit()
             while(guess_or_tip in expected_tip and tries_tips[1] > 0):
-                    random_tip(secret_number)
-                    tries_tips[1] -= 1
-                    guess_or_tip = input("Would you like to guess or take a tip?\n").strip().lower()
-                    if(tries_tips[1] == 0):
-                        print("Seems like you ran out of tips!\n")
-                        guess_or_tip = "guess"
-            while(guess_or_tip in expected_guess and tries_tips[0] > 0):
-                    guess = int(input("Please type your guess\n"))
-                    if(guess == secret_number):
-                        print("Congratulations, you won!\n")
-                        print("Your final score was: {}".format(score))
-                        exit()
-                    elif(guess != secret_number):
-                        print("Wrong number!\n")
-                        tries_tips[0] -= 1
-                        score = greater_or_lower(guess, score, secret_number)
-                        print("You got {} chances\n".format(tries_tips[0]))
-                        if(tries_tips[0] > 0 and tries_tips[1] > 0):
-                            guess_or_tip = input("Would you like to guess or take a tip?\n")
-                        elif(tries_tips[0] == 0 and tries_tips[1] == 0):
-                            print("Game over!\n")
-                            print("Thanks for playing!\n")
-                            break
-        print("Your final score was: {}".format(score))
+                random_tip(secret_number)
+                tries_tips[1] -= 1
+                guess_or_tip = input("Would you like to guess or take a tip?\n").strip().lower()
+                if(guess_or_tip in expected_tip and tries_tips[1] == 0):
+                    print("Seems like you ran out of tips!\n")
+                    guess_or_tip = "guess"
 
+            while((guess_or_tip not in expected_tip) and (guess_or_tip not in expected_guess)):
+                guess_or_tip = input("I'm sorry, but I coundn't understand that, could you please type again?\n").strip().lower()
+
+            while(guess_or_tip in expected_guess and tries_tips[0] > 0):
+                guess = input("Please type your guess\n")
+                guess = is_guess_valid(guess)       #calling function to determine if user typed number or string here
+
+                if(guess == secret_number):
+                    print("Congratulations, you won!\n")
+                    print("Your final score was: {}".format(score))
+                    exit()
+                elif(guess != secret_number):
+                    print("Wrong number!\n")
+                    tries_tips[0] -= 1
+                    score = greater_or_lower(guess, score, secret_number)
+                    print("You got {} chances\n".format(tries_tips[0]))
+                    if(tries_tips[0] > 0 and tries_tips[1] > 0):
+                        guess_or_tip = input("Would you like to guess or take a tip?\n")
+                    elif(tries_tips[0] == 0 and tries_tips[1] == 0):
+                        print("Game over!\n")
+                        print("Thanks for playing!\n")
+                        break
+        print("Your final score was: {}".format(score))
 
 
 
