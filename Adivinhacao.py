@@ -179,6 +179,8 @@ def jogar():
 
             guess_or_tip , score = wrong_number(guess , secret_number , tries_tips , score , guess_or_tip)
 
+            return guess_or_tip , score
+
 
     def game_loop(secret_number):
 
