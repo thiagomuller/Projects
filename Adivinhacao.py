@@ -126,6 +126,60 @@ def jogar():
         return guess
 
 
+    def quit_situation(guess_or_tip):
+        if (guess_or_tip == "q"):
+            print("You quited, thanks for playing!")
+            exit()
+
+    def not_tip_and_not_guess(guess_or_tip , expected_tip , expected_guess):
+        while ((guess_or_tip not in expected_tip) and (guess_or_tip not in expected_guess)):
+            guess_or_tip = input("I'm sorry, but I coundn't understand that, could you please type again?\n").strip().lower()
+        return guess_or_tip
+
+    def tips_loop(guess_or_tip , expected_tip , tries_tips):
+        while (guess_or_tip in expected_tip and tries_tips[1] > 0):
+            random_tip(secret_number)
+            tries_tips[1] -= 1
+            guess_or_tip = input("Would you like to guess or take a tip?\n").strip().lower()
+            if (guess_or_tip in expected_tip and tries_tips[1] == 0):
+                print("Seems like you ran out of tips!\n")
+                guess_or_tip = "guess"
+        return guess_or_tip
+
+    def win_situation(guess , secret_number , score):
+        if (guess == secret_number):
+            print("Congratulations, you won!\n")
+            print("Your final score was: {}".format(score))
+            exit()
+
+    def loose_situation(tries_tips):
+        if (tries_tips[0] == 0 and tries_tips[1] == 0):
+            print("Game over!\n")
+            print("Thanks for playing!\n")
+            exit()
+
+    def wrong_number(guess , secret_number , tries_tips , score , guess_or_tip):
+        if (guess != secret_number):
+            print("Wrong number!\n")
+            tries_tips[0] -= 1
+            score = greater_or_lower(guess, score, secret_number)
+            print("You got {} chances\n".format(tries_tips[0]))
+            if (tries_tips[0] > 0 and tries_tips[1] > 0):
+                guess_or_tip = input("Would you like to guess or take a tip?\n")
+            loose_situation(tries_tips)
+        return guess_or_tip , score
+
+
+    def guess_loop(guess_or_tip , expected_guess , tries_tips , secret_number ,  score):
+        while (guess_or_tip in expected_guess and tries_tips[0] > 0):
+            guess = input("Please type your guess\n")
+            guess = is_guess_valid(guess)  # calling function to determine if user typed number or string here
+
+            win_situation(guess , secret_number , score)
+
+            guess_or_tip , score = wrong_number(guess , secret_number , tries_tips , score , guess_or_tip)
+
+
     def game_loop(secret_number):
 
         tries_tips = choosing_difficulties()
@@ -134,42 +188,18 @@ def jogar():
         score = 1000
         print("Type q to quit anytime you want\n")
         print(secret_number)
-        guess_or_tip = ""
         guess_or_tip = input("Would you like to guess or take a tip?\n").strip().lower()
         for rodada in range(1 , tries_tips[0] + 1):
-            if(guess_or_tip == "q"):
-                print("You quited, thanks for playing!")
-                exit()
-            while(guess_or_tip in expected_tip and tries_tips[1] > 0):
-                random_tip(secret_number)
-                tries_tips[1] -= 1
-                guess_or_tip = input("Would you like to guess or take a tip?\n").strip().lower()
-                if(guess_or_tip in expected_tip and tries_tips[1] == 0):
-                    print("Seems like you ran out of tips!\n")
-                    guess_or_tip = "guess"
 
-            while((guess_or_tip not in expected_tip) and (guess_or_tip not in expected_guess)):
-                guess_or_tip = input("I'm sorry, but I coundn't understand that, could you please type again?\n").strip().lower()
+            quit_situation(guess_or_tip)
 
-            while(guess_or_tip in expected_guess and tries_tips[0] > 0):
-                guess = input("Please type your guess\n")
-                guess = is_guess_valid(guess)       #calling function to determine if user typed number or string here
+            guess_or_tip = tips_loop(guess_or_tip , expected_tip , tries_tips)
 
-                if(guess == secret_number):
-                    print("Congratulations, you won!\n")
-                    print("Your final score was: {}".format(score))
-                    exit()
-                elif(guess != secret_number):
-                    print("Wrong number!\n")
-                    tries_tips[0] -= 1
-                    score = greater_or_lower(guess, score, secret_number)
-                    print("You got {} chances\n".format(tries_tips[0]))
-                    if(tries_tips[0] > 0 and tries_tips[1] > 0):
-                        guess_or_tip = input("Would you like to guess or take a tip?\n")
-                    elif(tries_tips[0] == 0 and tries_tips[1] == 0):
-                        print("Game over!\n")
-                        print("Thanks for playing!\n")
-                        break
+            guess_or_tip = not_tip_and_not_guess(guess_or_tip , expected_tip , expected_guess)
+
+            guess_or_tip, score = guess_loop(guess_or_tip , expected_guess , tries_tips , secret_number ,  score)
+
+
         print("Your final score was: {}".format(score))
 
 
